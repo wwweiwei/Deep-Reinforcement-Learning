@@ -7,7 +7,7 @@ class Agent:
         """
         symbol (string)
         state (Board)
-        load_trainer (string) - Path to saved trainer
+        load_trainer (string)
         """
         self.symbol = symbol
         self.current_state = state
@@ -16,9 +16,9 @@ class Agent:
         self.action_history = []
 
         if load_trainer is None:
-            self.trainer = Trainer(self)
+            print("Error in loading agent!")
         else:
-            print("load_trainer: "+str(load_trainer))
+            # print("Success in loading agent: "+str(load_trainer))
             self.trainer = self.loadTrainer(load_trainer)
 
     def getPossibleActions(self):
@@ -29,22 +29,6 @@ class Agent:
     def updatePossibleActions(self):
         """ Update possible actions """
         self.actions = self.current_state.getAvailablePos()
-    
-    def revertLastAction(self, state = None):
-        """ Make move from agent, updates the state and possible actions  """
-        if state == None:
-            state = self.current_state
-
-        # Get last action
-        last_action = self.action_history.pop()
-        x = last_action[0]
-        y = last_action[1]
-        
-        # Set to zero
-        state.setPosition(x, y, 0) 
-
-        # Update possible actions
-        self.updatePossibleActions()
 
     def getActionHash(self, action):
         """ Get hash key of action """
@@ -56,19 +40,12 @@ class Agent:
         if state is None:
             state = self.current_state
 
-        if not action is None:
-            self.performAction(action, state=state)
-
         next_state_hash = state.getStateHash()
         next_actions_hash = []
         for a in self.actions:
             next_actions_hash.append(self.getActionHash(a))
 
-        if not action is None:
-            self.revertLastAction(state=state)
-
         return next_state_hash, next_actions_hash
-
 
     def assignState(self, state):
         """ Assign a state (Board) to the agent"""
@@ -86,8 +63,7 @@ class Agent:
         return self.trainer.getBestAction(state_hash, actions_hash, self.actions)
     
     
-    def loadTrainer(self, save_path):
-            
+    def loadTrainer(self, save_path):   
         with open(save_path, "rb") as f:
             dict = cPickle.load(f)
         # print("Q: "+str(dict))
@@ -106,14 +82,6 @@ class Board:
         self.rows = rows
         self.cols = cols
         self.win_threshold = win_threshold
-
-    def getState(self):
-        """ Get state of game """
-        return self.state
-    
-    def getPosition(self, x, y):
-        """ Get state at position (x,y) """
-        return self.state[x,y]
 
     def setPosition(self, x, y, value):
         """  Set state at position (x,y) with value """
@@ -137,7 +105,6 @@ class Board:
                 
                 factor = 10*factor
         return state_hash
-
 
 class Trainer:
     def __init__(self, agent, learning_parameter = 0.1, discount_factor = 0.9, Q = {}):
@@ -166,12 +133,6 @@ class Trainer:
         else:
             self.Q[state_action_key] = 0
             return 0
-
-    def setValueQ(self, state_hash, action_hash, value):
-        """ Set value in Q """
-        state_action_key = Trainer.getStatePairKey(state_hash, action_hash)
-
-        self.Q[state_action_key] = value
 
     def getMaxQ(self, state_hash, list_action_hash):
         """ Returns the maximum Q value given a state and list of actions (input is hash keys) """
@@ -211,7 +172,7 @@ class Play():
 
             if len(input_state[1:10]) == 9:
                 state = input_state[1:10]
-                print("state:"+str(state))
+                # print("state:"+str(state))
             else:
                 print("Error State!")
 
@@ -225,15 +186,15 @@ class Play():
                     elif int(state[index]) == -1:
                         self.board.setPosition(i, j, -1)
                     index+=1
-            print("board: "+str(self.board))
+            # print("board: "+str(self.board))
 
             if input_state[0] == '1':
                 self.current_player = playerX
             else:
                 self.current_player = playerO
-            print("self.current_player: "+str(self.current_player))
+            # print("self.current_player: "+str(self.current_player))
 
-            print("Preparing agent")
+            # print("Preparing agent")
             self.agent = Agent(self.current_player, self.board, load_trainer = trained_agent)
             self.agent_symbol = self.agent.symbol
 
@@ -242,16 +203,17 @@ class Play():
 
         input_file.close() 
         output_file.close()
-        print("Finish") 
+        # print("Finish!") 
 
     def playMove(self, x, y):
-        print("x:"+str(x)+", y:"+str(y))
+        # print("Output move - x:"+str(x)+", y:"+str(y))
+        print(str(x)+" "+str(y))
         output_file.write("%d " % x)
         output_file.write("%d\n" % y)
 
     def agentMove(self):
         move = self.agent.getBestAction()
-        self.playMove(move[0], move[1])
+        self.playMove(move[1], move[0])
 
 
 BOARD_ROWS = 3
