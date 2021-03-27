@@ -12,7 +12,6 @@ class Agent:
         state (Board)
         load_trainer (string) - Path to saved trainer
         """
-
         self.symbol = symbol
         self.current_state = state
 
@@ -477,4 +476,4 @@ player1_symbol = Board.playerX
 player2_symbol = Board.playerO
 
 iterations = 500000 #500000
-simulate(iterations, explore_only=False, save_agent="hw1_3_data.pkl")
+simulate(iterations, explore_only=False, save_agent="hw1_3_data")

@@ -162,7 +162,7 @@ class Trainer:
 
 class Play():
     def __init__(self):
-        trained_agent = "hw1_3_data.pkl"
+        trained_agent = "hw1_3_data"
 
         for line in input_file.readlines():
             input_state = line.rstrip("\n").split(" ")
