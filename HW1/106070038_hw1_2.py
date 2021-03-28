@@ -2,7 +2,6 @@ import numpy as np
 import os, time
 import matplotlib.pyplot as plt
 
-## define function
 def TransMat(now_state, action):
     max_row = 4
     max_col = 12
@@ -43,9 +42,6 @@ def qlearn(action_value, reward, steps, gamma, alpha, epsilon):
             break
     # episode reward
     record = np.array(record,dtype=object)
-    #print("record[state, action, reward[next_state], next_state]")
-    #print(record[:,0])
-    
     map(record[:,0])
     epi_reward = np.sum(record[:,2])
     return action_value, epi_reward
@@ -69,7 +65,6 @@ def sarsa(action_value, reward, steps, gamma, alpha, epsilon):
             break
     # episode reward
     record = np.array(record,dtype=object)
-    
     map(record[:,0])
     epi_reward = np.sum(record[:,2])
     return action_value, epi_reward
@@ -110,11 +105,11 @@ def show():
     plt.plot(cum_step_q, label = "q_learning")
     plt.plot(cum_step_SARSA, label = "SARSA")
 
-    plt.title('SARSA & Q-Learning')
+    plt.title('SARSA & Q-Learning Learning Curves')
     plt.xlabel('Episodes')
     plt.ylabel('Reward per Episode')
-    plt.ylim(-500, 0)
-    plt.legend(loc='lower right', ncol=2, mode="expand", borderaxespad=0.)
+    plt.ylim(-1000, 0)
+    plt.legend(loc='lower right', ncol=2, borderaxespad=0.)
 
     plt.show()
 
@@ -124,8 +119,6 @@ def map(state):
         for j in range(48):
             if state[i] == j:
                 draw_state[j] = -1
-    #print("draw:")
-    #print(draw_state)
     print("--------------------------------------------------")
     for i in range(0, 4):
             out = '| '
@@ -138,17 +131,30 @@ def map(state):
                     token = 'S'
                 if i == 3 and j == 11:
                     token = 'G'
+                if i == 3 and j != 0 and j != 11:
+                    token = 'X'
+                if i == 2 and j != 0 and j != 1 and j != 4 and j != 7 and j != 10 and j != 11:
+                    token = 'X'
                 out += token + ' | '
             print(out)
 
-# main
+
 def main(episodes, method):
 
     ActionValue = np.zeros([48, 4])
+    # design map
     Reward = np.full(48, -1)
-    Reward[37:-1] = -100
-    # print("Reward")
-    # print(Reward)
+    Reward[26:28] = -100
+    Reward[29:31] = -100
+    Reward[32:34] = -100
+    Reward[37:-1] = -200
+
+    print("Reward")
+    print(Reward[0:12])
+    print(Reward[12:24])
+    print(Reward[24:36])
+    print(Reward[36:49])
+
     EpisodeReward = []
 
     Gamma = 0.99
@@ -162,15 +168,15 @@ def main(episodes, method):
             print("Q-learning ep "+str(episode))
             ActionValue, Epi_Reward = qlearn(ActionValue, Reward, Steps, Gamma, Alpha, Epsilon)
             EpisodeReward.append(Epi_Reward)
-        print("QLearn ActionValue:")
-        print(ActionValue)
+        #print("QLearn ActionValue:")
+        #print(ActionValue)
     elif method == 'sarsa':
         for episode in range(episodes):
             print("Sarsa ep "+str(episode))
             ActionValue, Epi_Reward = sarsa(ActionValue, Reward, Steps, Gamma, Alpha, Epsilon)
             EpisodeReward.append(Epi_Reward)
-        print("sarsa ActionValue:")
-        print(ActionValue)
+        #print("Sarsa ActionValue:")
+        #print(ActionValue)
     else:
         print("Error method!")
         return
@@ -178,13 +184,11 @@ def main(episodes, method):
     return EpisodeReward
 
 if __name__ == '__main__':
-    # episodes = 1000
     q_reward = main(1000, 'qlearning')
     s_reward = main(1000, 'sarsa')
     #print(q_reward)
     #print(s_reward)
-    
     np.save('q-episode-reward.npy', q_reward)
     np.save('s-episode-reward.npy', s_reward)
-
+    # show plot
     show()
