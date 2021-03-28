@@ -278,10 +278,57 @@ class Board:
             diag8 = np.all(diag8 == sym)
 
             ##
+            diag11 = np.array([self.state[0,0,0], self.state[0,1,1], self.state[0,2,2], self.state[0,3,3]])
+            diag11 = np.all(diag11 == sym)
 
+            diag12 = np.array([self.state[1,0,0], self.state[1,1,1], self.state[1,2,2], self.state[1,3,3]])
+            diag12 = np.all(diag12 == sym)
+
+            diag13 = np.array([self.state[2,0,0], self.state[2,1,1], self.state[2,2,2], self.state[2,3,3]])
+            diag13 = np.all(diag13 == sym)
             
+            diag14 = np.array([self.state[3,0,0], self.state[3,1,1], self.state[3,2,2], self.state[3,3,3]])
+            diag14 = np.all(diag14 == sym)
+
+            diag15 = np.array([self.state[0,0,3], self.state[0,1,2], self.state[0,2,1], self.state[0,3,0]])
+            diag15 = np.all(diag15 == sym)
+            
+            diag16 = np.array([self.state[1,0,3], self.state[1,1,2], self.state[1,2,1], self.state[1,3,0]])
+            diag16 = np.all(diag16 == sym)
+
+            diag17 = np.array([self.state[2,0,3], self.state[2,1,2], self.state[2,2,1], self.state[2,3,0]])
+            diag17 = np.all(diag17 == sym)
+
+            diag18 = np.array([self.state[3,0,3], self.state[3,1,2], self.state[3,2,1], self.state[3,3,0]])
+            diag18 = np.all(diag18 == sym)
+
+            ##
+            diag21 = np.array([self.state[0,0,0], self.state[1,0,1], self.state[2,0,2], self.state[3,0,3]])
+            diag21 = np.all(diag21 == sym)
+
+            diag22 = np.array([self.state[0,1,0], self.state[1,1,1], self.state[2,1,2], self.state[3,1,3]])
+            diag22 = np.all(diag22 == sym)
+
+            diag23 = np.array([self.state[0,2,0], self.state[1,2,1], self.state[2,2,2], self.state[3,2,3]])
+            diag23 = np.all(diag23 == sym)
+            
+            diag24 = np.array([self.state[0,3,0], self.state[1,3,1], self.state[2,3,2], self.state[3,3,3]])
+            diag24 = np.all(diag24 == sym)
+
+            diag25 = np.array([self.state[0,0,3], self.state[1,0,2], self.state[2,0,1], self.state[3,0,0]])
+            diag25 = np.all(diag25 == sym)
+            
+            diag26 = np.array([self.state[0,1,3], self.state[1,1,2], self.state[2,1,1], self.state[3,1,0]])
+            diag26 = np.all(diag26 == sym)
+
+            diag27 = np.array([self.state[0,2,3], self.state[1,2,2], self.state[2,2,1], self.state[3,2,0]])
+            diag27 = np.all(diag27 == sym)
+
+            diag28 = np.array([self.state[0,3,3], self.state[1,3,2], self.state[2,3,1], self.state[3,3,0]])
+            diag28 = np.all(diag28 == sym)
+
             # Check if state has winner and return winner in that case
-            if row or col or height or diag1 or diag2 or diag3 or diag4 or diag5 or diag6 or diag7 or diag8:
+            if row or col or height or diag1 or diag2 or diag3 or diag4 or diag5 or diag6 or diag7 or diag8 or diag11 or diag12 or diag13 or diag14 or diag15 or diag16 or diag17 or diag18 or diag21 or diag22 or diag23 or diag24 or diag25 or diag26 or diag27 or diag28:
                 return sym
             
         # No winner found
