@@ -32,7 +32,8 @@ class Agent:
 
     def getActionHash(self, action):
         """ Get hash key of action """
-        action_hash = 100*(action[0]+1) + 10*(action[1]+1) + (action[2]+1)
+        action_hash = 10*(action[0]+1) + (action[1]+1) + (action[2]+1)
+        ### action_hash = 10*(action[0]+1) + (action[1]+1)
         return action_hash
 
     def getActionHashFromState(self, action = None, state = None):
@@ -84,9 +85,9 @@ class Board:
         self.heights = heights
         self.win_threshold = win_threshold
 
-    def setPosition(self, x, y, value):
+    def setPosition(self, x, y, z, value):
         """  Set state at position (x,y) with value """
-        self.state[x,y] = value
+        self.state[x,y,z] = value
 
     def getAvailablePos(self):
         """  Get state positions that have no value (non-zero) """
@@ -104,8 +105,7 @@ class Board:
                     else:
                         state_hash += self.state[i,j,k]*factor
                     
-                    factor = 100*factor
-                factor = 10*factor
+                    factor = 10*factor
         return state_hash
 
 class Trainer:

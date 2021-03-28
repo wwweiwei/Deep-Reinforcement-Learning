@@ -101,7 +101,7 @@ class Agent:
 
     def getActionHash(self, action):
         """ Get hash key of action """
-        action_hash = 100*(action[0]+1) + 10*(action[1]+1) + (action[2]+1)
+        action_hash = 10*(action[0]+1) + (action[1]+1) + (action[2]+1)
         ### action_hash = 10*(action[0]+1) + (action[1]+1)
         return action_hash
 
@@ -230,8 +230,7 @@ class Board:
                     else:
                         state_hash += self.state[i,j,k]*factor
                     
-                    factor = 100*factor
-                factor = 10*factor
+                    factor = 10*factor
         return state_hash
 
     def checkWinner(self):
@@ -278,6 +277,9 @@ class Board:
             diag8 = np.array([self.state[0,3,3], self.state[1,2,3], self.state[2,1,3], self.state[3,0,3]])
             diag8 = np.all(diag8 == sym)
 
+            ##
+
+            
             # Check if state has winner and return winner in that case
             if row or col or height or diag1 or diag2 or diag3 or diag4 or diag5 or diag6 or diag7 or diag8:
                 return sym
