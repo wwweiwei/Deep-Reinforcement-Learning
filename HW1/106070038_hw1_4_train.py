@@ -44,7 +44,7 @@ class Agent:
             Make move from agent, updates the state and possible actions.
             Also updates Q at the same time.                        
         """
-        if action.shape != (2,):
+        if action.shape != (3,):
             print("Wrong shape " + str(action))
 
         if state == None:
@@ -53,13 +53,16 @@ class Agent:
         # Read action
         x = action[0]
         y = action[1]
+        ###
+        z = action[2]
 
         # Update Q as part of Q-learning in the Trainer class
         if updateQ is True:
             self.trainer.updateQ(state, action)
 
         # Make move
-        state.setPosition(x, y, self.symbol)
+        ###
+        state.setPosition(x, y, z, self.symbol)
         self.action_history.append(action)
 
         # Update possible actions
@@ -86,16 +89,20 @@ class Agent:
         last_action = self.action_history.pop()
         x = last_action[0]
         y = last_action[1]
+        ###
+        z = last_action[2]
         
         # Set to zero
-        state.setPosition(x, y, 0) 
+        ###
+        state.setPosition(x, y, z, 0) 
 
         # Update possible actions
         self.updatePossibleActions()
 
     def getActionHash(self, action):
         """ Get hash key of action """
-        action_hash = 10*(action[0]+1) + (action[1]+1)
+        action_hash = 100*(action[0]+1) + 10*(action[1]+1) + (action[2]+1)
+        ### action_hash = 10*(action[0]+1) + (action[1]+1)
         return action_hash
 
     def getActionHashFromState(self, action = None, state = None):
@@ -175,15 +182,16 @@ class Board:
     playerX = 1
     playerO = -1
 
-    def __init__(self, rows = 4, cols = 4, win_threshold = 4):
+    def __init__(self, rows = 4, cols = 4, heights = 4, win_threshold = 4):
         """
             rows (int)
             cols (int)
             win_threshold (int) - Do not change
         """ 
-        self.state = np.zeros((rows, cols), dtype=np.int8)
+        self.state = np.zeros((rows, cols, heights), dtype=np.int8)
         self.rows = rows
         self.cols = cols
+        self.heights = heights
         self.win_threshold = win_threshold
 
     def showBoard(self):
@@ -191,19 +199,20 @@ class Board:
         print(str(self.state))
         print("rows= "+str(self.rows))
         print("cols= "+str(self.cols))
+        print("heights= "+str(self.heights))
         print("win_threshold= "+str(self.win_threshold))
 
     def getState(self):
         """ Get state of game """
         return self.state
     
-    def getPosition(self, x, y):
+    def getPosition(self, x, y, z):
         """ Get state at position (x,y) """
-        return self.state[x,y]
+        return self.state[x,y,zip]
 
-    def setPosition(self, x, y, value):
+    def setPosition(self, x, y, z, value):
         """  Set state at position (x,y) with value """
-        self.state[x,y] = value
+        self.state[x,y,z] = value
 
     def getAvailablePos(self):
         """  Get state positions that have no value (non-zero) """
@@ -213,13 +222,15 @@ class Board:
         """  Get hash key of state """
         factor = 1
         state_hash = 0
-        for i in range(self.rows):
-            for j in range(self.cols):
-                if inverted:
-                    state_hash -= self.state[i,j]*factor
-                else:
-                    state_hash += self.state[i,j]*factor
-                
+        for k in range(self.heights):
+            for i in range(self.rows):
+                for j in range(self.cols):
+                    if inverted:
+                        state_hash -= self.state[i,j,k]*factor
+                    else:
+                        state_hash += self.state[i,j,k]*factor
+                    
+                    factor = 100*factor
                 factor = 10*factor
         return state_hash
 
@@ -238,17 +249,37 @@ class Board:
             # Check columns
             col = np.any((np.all(self.state == sym, axis=0)))
 
+            # Check heights
+            height = np.any((np.all(self.state == sym, axis=2)))
+
             # Check diagonals
             ##
-            diag1 = np.array([self.state[0,0], self.state[1,1], self.state[2,2], self.state[3,3]])
+            diag1 = np.array([self.state[0,0,0], self.state[1,1,0], self.state[2,2,0], self.state[3,3,0]])
             diag1 = np.all(diag1 == sym)
-            
-            ##
-            diag2 = np.array([self.state[0,3], self.state[1,2], self.state[2,1], self.state[3,0]])
+
+            diag2 = np.array([self.state[0,0,1], self.state[1,1,1], self.state[2,2,1], self.state[3,3,1]])
             diag2 = np.all(diag2 == sym)
 
+            diag3 = np.array([self.state[0,0,2], self.state[1,1,2], self.state[2,2,2], self.state[3,3,2]])
+            diag3 = np.all(diag3 == sym)
+            
+            diag4 = np.array([self.state[0,0,3], self.state[1,1,3], self.state[2,2,3], self.state[3,3,3]])
+            diag4 = np.all(diag4 == sym)
+
+            diag5 = np.array([self.state[0,3,0], self.state[1,2,0], self.state[2,1,0], self.state[3,0,0]])
+            diag5 = np.all(diag5 == sym)
+            
+            diag6 = np.array([self.state[0,3,1], self.state[1,2,1], self.state[2,1,1], self.state[3,0,1]])
+            diag6 = np.all(diag6 == sym)
+
+            diag7 = np.array([self.state[0,3,2], self.state[1,2,2], self.state[2,1,2], self.state[3,0,2]])
+            diag7 = np.all(diag7 == sym)
+
+            diag8 = np.array([self.state[0,3,3], self.state[1,2,3], self.state[2,1,3], self.state[3,0,3]])
+            diag8 = np.all(diag8 == sym)
+
             # Check if state has winner and return winner in that case
-            if row or col or diag1 or diag2:
+            if row or col or height or diag1 or diag2 or diag3 or diag4 or diag5 or diag6 or diag7 or diag8:
                 return sym
             
         # No winner found
@@ -272,16 +303,17 @@ class Board:
         for action in self.getAvailablePos():
             x = action[0]
             y = action[1]
+            z = action[2]
 
             # Perform action
-            self.setPosition(x, y, next_player_player)
+            self.setPosition(x, y, z, next_player_player)
 
             # Check if winning move
             if self.checkWinner() != 0:
                 winning_move_found = True
 
             # Revert action
-            self.setPosition(x, y, 0)
+            self.setPosition(x, y, z, 0)
 
             # If found, then return True
             if winning_move_found is True:
@@ -292,7 +324,7 @@ class Board:
     def resetGame(self):
         """ Reset game """
         # self.showBoard()
-        self.state = np.zeros((self.rows, self.cols), dtype=np.int16)
+        self.state = np.zeros((self.rows, self.cols, self.heights), dtype=np.int16)
 
     def getInvertedState(self):
         """ Return state where player O and X have swapped places """
@@ -477,5 +509,5 @@ def simulate(iterations, explore_only = False, save_agent = None):
 player1_symbol = Board.playerX
 player2_symbol = Board.playerO
 
-iterations = 500 #500000
+iterations = 50000 #500000
 simulate(iterations, explore_only=False, save_agent="hw1_4_data")
