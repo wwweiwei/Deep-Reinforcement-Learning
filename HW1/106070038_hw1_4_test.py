@@ -164,7 +164,7 @@ class Trainer:
 
 class Play():
     def __init__(self):
-        trained_agent = "hw1_4_data"
+        trained_agent = "106070038_hw1_4_data"
 
         for line in input_file.readlines():
             input_state = line.rstrip("\n").split(" ")

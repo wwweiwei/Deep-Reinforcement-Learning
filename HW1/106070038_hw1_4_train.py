@@ -53,7 +53,6 @@ class Agent:
         # Read action
         x = action[0]
         y = action[1]
-        ###
         z = action[2]
 
         # Update Q as part of Q-learning in the Trainer class
@@ -61,7 +60,6 @@ class Agent:
             self.trainer.updateQ(state, action)
 
         # Make move
-        ###
         state.setPosition(x, y, z, self.symbol)
         self.action_history.append(action)
 
@@ -89,11 +87,9 @@ class Agent:
         last_action = self.action_history.pop()
         x = last_action[0]
         y = last_action[1]
-        ###
         z = last_action[2]
         
         # Set to zero
-        ###
         state.setPosition(x, y, z, 0) 
 
         # Update possible actions
@@ -102,7 +98,6 @@ class Agent:
     def getActionHash(self, action):
         """ Get hash key of action """
         action_hash = 10*(action[0]+1) + (action[1]+1) + (action[2]+1)
-        ### action_hash = 10*(action[0]+1) + (action[1]+1)
         return action_hash
 
     def getActionHashFromState(self, action = None, state = None):
@@ -152,7 +147,6 @@ class Agent:
     def getBestAction(self):
         """ Get best move from the Trainer that has the largest expected reward """
         #self.showAgent()
-
         self.updatePossibleActions()
 
         # Get hash key for state and actions
@@ -160,7 +154,6 @@ class Agent:
 
         # Return best move (if all are equally good, then it picks one at random)
         return self.trainer.getBestAction(state_hash, actions_hash, self.actions)
-    
 
     def saveTrainer(self, save_path):
         """ Saves agent to save_path (str) """
@@ -172,10 +165,8 @@ class Agent:
         """
         Load Q-values from another trainer
         """
-        
         with open(save_path, "rb") as f:
             dict = cPickle.load(f)
-        # print("Q"+str(dict))
         return Trainer(self, Q=dict)
 
 class Board:
@@ -229,30 +220,24 @@ class Board:
                         state_hash -= self.state[i,j,k]*factor
                     else:
                         state_hash += self.state[i,j,k]*factor
-                    
                     factor = 10*factor
         return state_hash
 
     def checkWinner(self):
         """  Get winner, if one exists """
-        """ TODO: Not general case, only works for 3x3 board """
-
         symbols = np.unique(self.state)
         symbols = list(symbols[np.nonzero(symbols)])
 
         for sym in symbols:
 
             # Check rows
-            row= np.any((np.all(self.state == sym, axis=1)))
-
+            row = np.any((np.all(self.state == sym, axis=1)))
             # Check columns
             col = np.any((np.all(self.state == sym, axis=0)))
-
             # Check heights
             height = np.any((np.all(self.state == sym, axis=2)))
 
             # Check diagonals
-            ##
             diag1 = np.array([self.state[0,0,0], self.state[1,1,0], self.state[2,2,0], self.state[3,3,0]])
             diag1 = np.all(diag1 == sym)
 
@@ -477,7 +462,7 @@ def simulate(iterations, explore_only = False, save_agent = None):
     agent1 = Agent(player1_symbol, game)
     agent2 = Agent(player2_symbol, game)
     
-    # agent1 = Agent(player1_symbol, game, load_trainer = "hw1_3_data.pkl")
+    # agent1 = Agent(player1_symbol, game, load_trainer = "106070038_hw1_4_data.pkl")
 
     # Counters for wins of each agent and total number of games
     nbr_wins_agent1 = 0
@@ -506,14 +491,13 @@ def simulate(iterations, explore_only = False, save_agent = None):
         else:
             a = agent2
 
-        #Explore
+        # Explore
         if explore_only is True or random.random() < exploration_probability:
             a.performRandomAction(updateQ=True)
         # Exploit
         else:
             best_action = a.getBestAction()
             a.performAction(best_action, updateQ=(True))
-
 
         # Reduce probability to explore during training
         # Do not remove completely
@@ -558,5 +542,5 @@ def simulate(iterations, explore_only = False, save_agent = None):
 player1_symbol = Board.playerX
 player2_symbol = Board.playerO
 
-iterations = 50000 #500000
-simulate(iterations, explore_only=False, save_agent="hw1_4_data")
+iterations = 50000
+simulate(iterations, explore_only=False, save_agent="106070038_hw1_4_data")
